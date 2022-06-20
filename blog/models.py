@@ -1,4 +1,6 @@
+from dataclasses import field
 from datetime import datetime
+from urllib import request
 from django.db import models
 from django.contrib.auth.models import User, UserManager
 from django import forms
@@ -12,10 +14,14 @@ class BlogUser(models.Model):
     def __str__(self) -> str:
         return self.user.username
 
+class BlogUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
 
 class BlogPost(models.Model):
     title = models.CharField(max_length=10)
-    author = models.ForeignKey(BlogUser, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     body = models.TextField()
     files = models.FileField(blank=True)
     publication_date = models.DateTimeField('Date published', default=django.utils.timezone.now)
@@ -23,15 +29,17 @@ class BlogPost(models.Model):
 
 class BlogForm(forms.ModelForm):
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'author'], name='unique_post_date_combination'
+            )
+        ]
         model = BlogPost
-        fields = '__all__'
-        widgets = {
-            'user': TextInput(attrs={'readonly': 'readonly'})
-        }
+        exclude = ['author']
 
 class Comment(models.Model):
     blog_post = models.ForeignKey(BlogPost, on_delete=models.CASCADE)
-    blog_user = models.ForeignKey(BlogUser, on_delete=models.SET_NULL, null=True)
+    blog_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     date = models.DateTimeField('Commented at')
     body = models.TextField(default='')
 
