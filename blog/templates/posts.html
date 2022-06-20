@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block navbar %} 
+            <nav class="navbar navbar-expand-sm navbar-light bg-light">
+                <a class="navbar-brand" href="{% url 'posts' %}">Home</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="navbarSupportedContent" aria-cont0rols="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+              
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav mr-auto">
+                  </ul>
+                  <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="{% url 'addblog' %}"><button type="button" class="btn btn-primary" >Post</button>     </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">About</a>
+                    </li>
+                      {% block log_button %}
+                      {% endblock %}
+                  </ul>
+                </div>
+            </nav>
+{% endblock %} 
+
+{% block blog_posts %}
+{% for blog in blogs %}
+<hr style="width:auto;height:2px;border-width:0;color:gray;background-color:gray">
+<div class="clearfix">
+    {% load static %}
+    <img src="{% static '/blog/project.png' %}" class="float-left">
+    <div class="card float-right border-0" style="width: 35rem;">
+        <div class="card-body">
+        <h3 class="card-title"><strong>{{blog.title}}</strong></h3>
+        <h5 class="card-title", style="color:rgb(52, 47, 47);"><strong>{{blog.author}}</strong></h5>
+        <p class="card-text">{{blog.body}} </p>
+        <button type="button" class="btn btn-primary">View Post</button>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
